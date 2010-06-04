@@ -1,0 +1,30 @@
+JAVA_CLASSPATH="servlet-api.jar:jsp-api.jar"
+inherit ant
+
+DESCRIPTION="JSR-97 JavaHelp online help system"
+HOMEPAGE="http://javahelp.dev.java.net/"
+SRC_URI="https://javahelp.dev.java.net/files/documents/5985/145533/${ORIG_PN}-src-${PV}.zip"
+
+# requires jdic
+DISTCLEANFILES="jhMaster/JavaHelp/src/new/javax/help/plaf/basic/BasicNativeContentViewerUI.java"
+
+ANT_BUILD_XML="javahelp_nbproject/build.xml"
+ANT_BUILD_TARGETS="release javadoc"
+ANT_BUILD_ARGS="
+	-Dservlet-jar=${JAVA_DIR}/servlet-api.jar
+	-Djsp-jar=${JAVA_DIR}/jsp-api.jar
+	-Djdic-jar-present=true
+	-Djdic-zip-present=true
+	-Dservlet-jar-present=true
+	-Dtomcat-zip-present=true
+"
+ANT_INSTALL_JARS="javahelp_nbproject/dist/lib/*.jar"
+ANT_INSTALL_JAVADOC="javahelp_nbproject/dist/lib/javadoc"
+
+src_install() {
+	cd ${B}
+	ant_install
+
+	java_wrapper jhsearch jsearch.jar com.sun.java.help.search.QueryEngine
+	java_wrapper jhindexer jsearch.jar com.sun.java.help.search.Indexer
+}
